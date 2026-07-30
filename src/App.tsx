@@ -9,6 +9,7 @@ import { api } from './api'
 import { ToolPage } from './components/ToolPage'
 import { ResponsiveResults } from './components/ResponsiveResults'
 import { UnitRules } from './components/UnitRules'
+import { GoogleSheetContext } from './components/GoogleSheetContext'
 import type { ColumnDefaults, ModelInvalidRow, PackageGroup, UnitInvalidRow } from './types'
 
 type Page = 'units' | 'model' | 'packages' | 'rules'
@@ -114,6 +115,9 @@ export function App() {
             <Brand compact />
             <Button aria-label="Mở menu" icon={<MenuOutlined />} onClick={() => setDrawerOpen(true)} />
           </header>
+          <div className="sheet-context-shell">
+            <GoogleSheetContext />
+          </div>
           <Layout.Content>{content}</Layout.Content>
         </Layout>
       </Layout>

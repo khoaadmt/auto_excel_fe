@@ -40,7 +40,19 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .sidebar-footer span { margin-top: 2px; color: #7c8984; }
 .sidebar-footer i { width: 7px; height: 7px; border-radius: 50%; background: #20a36f; box-shadow: 0 0 0 3px #d9f3e9; }
 .mobile-header { display: none; }
-.page-shell { width: min(1180px, calc(100% - 64px)); margin: 0 auto; padding: 54px 0 70px; outline: none; }
+.sheet-context-shell { width: min(1180px, calc(100% - 64px)); margin: 26px auto 0; }
+.sheet-context { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 16px; border: 1px solid #dce5e0; border-radius: 12px; background: #fff; }
+.sheet-context.is-disconnected { border-color: #f0d8ae; background: #fffdf8; }
+.sheet-context-main { min-width: 0; display: flex; align-items: center; gap: 12px; flex: 1; }
+.sheet-context-icon { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; background: #e8f5ef; color: #16845b; font-size: 20px; }
+.is-disconnected .sheet-context-icon { color: #b66b08; background: #fff2d8; }
+.sheet-context-copy { min-width: 0; }
+.sheet-context-copy > span { display: flex; align-items: center; gap: 7px; color: #87938e; font-size: 10px; font-weight: 750; letter-spacing: .08em; }
+.sheet-context-copy .ant-tag { margin: 0; padding-inline: 6px; font-size: 9px; line-height: 18px; letter-spacing: 0; }
+.sheet-context-copy strong { display: block; max-width: min(48vw, 600px); margin-top: 4px; overflow: hidden; color: #29332f; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.sheet-context-copy small { display: block; margin-top: 3px; color: #8a7560; font-size: 11px; }
+.sheet-context-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.page-shell { width: min(1180px, calc(100% - 64px)); margin: 0 auto; padding: 32px 0 70px; outline: none; }
 .page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 30px; }
 .page-heading h1 { margin: 6px 0 8px !important; color: #17201d !important; font-size: clamp(27px, 3vw, 36px) !important; letter-spacing: -.04em; }
 .page-heading p { max-width: 650px; margin: 0 !important; color: #68756f; font-size: 15px; }
@@ -85,7 +97,8 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 @media (max-width: 1023px) {
   .desktop-sider { display: none; }
   .mobile-header { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid #e3e9e6; background: white; }
-  .page-shell { width: min(100% - 40px, 900px); padding-top: 34px; }
+  .sheet-context-shell { width: min(100% - 40px, 900px); margin-top: 20px; }
+  .page-shell { width: min(100% - 40px, 900px); padding-top: 30px; }
   .tool-grid { grid-template-columns: 1fr; }
   .result-panel .ant-card-body { min-height: 460px; }
   .ant-drawer-body { position: relative; padding: 12px !important; }.ant-drawer-body .sidebar-footer { bottom: 4px; }
@@ -94,7 +107,17 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 @media (max-width: 640px) {
   .mobile-header { height: 62px; padding: 0 16px; }
   .brand-mark { width: 36px; height: 36px; }
-  .page-shell { width: calc(100% - 24px); padding: 26px 0 40px; }
+  .sheet-context-shell { width: calc(100% - 24px); margin-top: 12px; }
+  .sheet-context { align-items: flex-start; padding: 12px; }
+  .sheet-context-icon { width: 38px; height: 38px; }
+  .sheet-context-copy strong { max-width: calc(100vw - 130px); font-size: 11px; }
+  .sheet-context-copy .ant-tag { display: none; }
+  .sheet-context-actions { align-self: center; }
+  .sheet-context-actions .ant-btn span:not(.anticon) { display: none; }
+  .sheet-context-actions .ant-btn { width: 40px; padding-inline: 0; }
+  .sheet-context-actions .ant-btn-primary { width: auto; padding-inline: 14px; }
+  .sheet-context-actions .ant-btn-primary span:not(.anticon) { display: inline; }
+  .page-shell { width: calc(100% - 24px); padding: 24px 0 40px; }
   .page-heading { display: block; margin-bottom: 22px; }.page-heading > .ant-tag { margin-top: 14px; }
   .page-heading h1 { margin-top: 4px !important; }.page-heading p { font-size: 14px; line-height: 1.55; }
   .panel .ant-card-body { padding: 18px; }

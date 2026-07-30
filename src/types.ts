@@ -36,3 +36,9 @@ export type UnitRule = {
   packageUnit: string
   expectedUnit: string
 }
+
+export type GoogleSheetConfig = {
+  googleSheetId: string
+  createdAt: string
+  updatedAt: string
+}
