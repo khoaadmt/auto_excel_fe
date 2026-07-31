@@ -13,6 +13,27 @@ body { margin: 0; min-width: 320px; min-height: 100dvh; }
 button, a, .ant-menu-item { touch-action: manipulation; }
 .skip-link { position: fixed; left: 16px; top: -60px; z-index: 2000; padding: 10px 14px; border-radius: 8px; background: #17201d; color: white; transition: top .18s ease; }
 .skip-link:focus { top: 16px; }
+.login-page { min-height: 100dvh; display: grid; grid-template-columns: minmax(380px, .92fr) minmax(480px, 1.08fr); background: #fff; }
+.login-visual { position: relative; min-height: 100dvh; display: flex; align-items: flex-end; overflow: hidden; padding: clamp(40px, 6vw, 80px); color: white; background: #116747; }
+.login-visual::before { content: ""; position: absolute; width: 480px; height: 480px; top: -170px; right: -190px; border: 90px solid rgba(255,255,255,.06); border-radius: 50%; }
+.login-visual::after { content: ""; position: absolute; width: 320px; height: 320px; bottom: -180px; left: -100px; border-radius: 50%; background: #1b8b62; }
+.login-grid-pattern { position: absolute; inset: 0; opacity: .12; background-image: linear-gradient(rgba(255,255,255,.45) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.45) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, black, transparent 80%); }
+.login-visual-copy { position: relative; z-index: 1; max-width: 510px; padding-bottom: 5vh; }
+.login-brand-mark { width: 58px; height: 58px; display: grid; place-items: center; margin-bottom: 26px; border: 1px solid rgba(255,255,255,.24); border-radius: 15px; color: white; background: rgba(255,255,255,.12); font-size: 29px; backdrop-filter: blur(8px); }
+.login-visual-copy h1 { margin: 0 0 14px !important; color: white !important; font-size: clamp(38px, 5vw, 60px) !important; letter-spacing: -.05em; }
+.login-visual-copy > p { max-width: 480px; margin-bottom: 30px; color: rgba(255,255,255,.75); font-size: 16px; line-height: 1.7; }
+.login-feature { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.82); font-size: 12px; }
+.login-feature .anticon { font-size: 18px; }
+.login-form-side { min-height: 100dvh; display: grid; place-items: center; padding: 40px; background: #f7f9f8; }
+.login-card { width: min(100%, 440px); border: 1px solid #e0e7e3; box-shadow: 0 20px 60px rgba(26, 52, 42, .08) !important; }
+.login-card .ant-card-body { padding: 38px; }
+.login-heading { margin-bottom: 30px; }
+.login-heading > span { color: #16845b; font-size: 10px; font-weight: 750; letter-spacing: .12em; }
+.login-heading h1 { margin: 7px 0 8px !important; font-size: 30px !important; letter-spacing: -.035em; }
+.login-heading p { margin: 0 !important; color: #74807b; font-size: 13px; }
+.login-error { margin: -4px 0 18px; }
+.login-card .ant-btn-primary { margin-top: 2px; }
+.login-security-note { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 20px 0 0; color: #8a9691; font-size: 10px; text-align: center; }
 .app-layout { min-height: 100dvh; }
 .desktop-sider { position: sticky !important; top: 0; height: 100dvh; border-right: 1px solid #e4e9e6; background: #fff !important; }
 .brand { height: 91px; display: flex; align-items: center; gap: 12px; padding: 0 24px; border-bottom: 1px solid #edf0ee; }
@@ -38,7 +59,7 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .sidebar-footer div { min-width: 0; flex: 1; }
 .sidebar-footer strong, .sidebar-footer span { display: block; font-size: 11px; }
 .sidebar-footer span { margin-top: 2px; color: #7c8984; }
-.sidebar-footer i { width: 7px; height: 7px; border-radius: 50%; background: #20a36f; box-shadow: 0 0 0 3px #d9f3e9; }
+.sidebar-footer > .ant-btn { flex: 0 0 auto; }
 .mobile-header { display: none; }
 .sheet-context-shell { width: min(1180px, calc(100% - 64px)); margin: 26px auto 0; }
 .sheet-context { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 16px; border: 1px solid #dce5e0; border-radius: 12px; background: #fff; }
@@ -93,18 +114,70 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .code-tag { font-family: "SFMono-Regular", Consolas, monospace; font-weight: 700; }
 .active-status { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; }.active-status i { width: 7px; height: 7px; border-radius: 50%; background: #16845b; }
 .row-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.source-columns-heading { align-items: flex-end; }
+.source-column-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+.source-columns-panel .ant-card-body { padding: 24px; }
+.excel-scroll { width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; border: 1px solid #cfd8d3; border-radius: 8px; outline: none; background: #fff; scrollbar-color: #a9b7b0 #edf1ef; scrollbar-width: thin; }
+.excel-scroll:focus-visible { box-shadow: 0 0 0 3px rgba(22, 132, 91, .16); }
+.excel-sheet { display: grid; width: 100%; min-width: max-content; }
+.excel-column { min-width: 0; border-right: 1px solid #d8dfdc; background: #fff; }
+.excel-column:last-child { border-right: 0; }
+.excel-column-letter { min-height: 46px; display: grid; place-items: center; padding: 6px 8px; border-bottom: 1px solid #cfd8d3; background: #edf2ef; }
+.excel-column-letter .ant-input { width: 56px; height: 32px; padding-inline: 6px; border-color: transparent; border-radius: 5px; background: transparent; color: #34413b; font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; font-weight: 750; text-align: center; }
+.excel-column-letter .ant-input:hover, .excel-column-letter .ant-input:focus { border-color: #16845b; background: #fff; }
+.excel-column.is-edited .excel-column-letter { background: #fff4d6; }
+.excel-column.is-edited .excel-column-letter .ant-input { color: #965b05; }
+.excel-column-title { height: 66px; display: flex; align-items: center; justify-content: center; padding: 7px 6px; overflow: hidden; border-bottom: 1px solid #e1e7e4; color: #26322d; font-size: 10px; font-weight: 700; line-height: 1.35; text-align: center; text-overflow: ellipsis; }
+.excel-column-default { height: 38px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 7px; color: #84908b; background: #fafcfb; font-size: 9px; white-space: nowrap; }
+.excel-column-default strong { color: #596660; font-family: "SFMono-Regular", Consolas, monospace; }
+.excel-column-default i, .default-dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #d97706; }
+.source-columns-error { margin-top: 14px; }
+.excel-legend { display: flex; align-items: center; gap: 18px; margin-top: 14px; color: #75827c; font-size: 10px; }
+.excel-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.edited-dot { width: 10px; height: 10px; display: inline-block; border: 1px solid #efd293; border-radius: 2px; background: #fff4d6; }
+.excel-legend small { margin-left: auto; color: #98a29e; font-size: 9px; }
+.copy-form-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr); gap: 32px; }
+.copy-form-section + .copy-form-section { padding-left: 32px; border-left: 1px solid #e5eae7; }
+.copy-section-heading { margin-bottom: 20px; }
+.copy-section-heading strong, .copy-section-heading span { display: block; }
+.copy-section-heading strong { color: #29332f; font-size: 13px; }
+.copy-section-heading span { margin-top: 4px; color: #84908b; font-size: 11px; }
+.override-heading { margin-bottom: 20px; }
+.override-list { display: grid; gap: 8px; }
+.override-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px 32px; gap: 8px; align-items: start; }
+.override-row .ant-form-item { margin-bottom: 0; }
+.copy-form-shell { width: 100%; }
+.copy-form-panel .ant-card-body { padding: 28px; }
+.copy-form-footer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 28px; padding-top: 22px; border-top: 1px solid #e5eae7; }
+.copy-info { width: 100%; min-width: 0; margin: 0; }
+.copy-info .ant-alert-content { min-width: 0; }
+.copy-info .ant-alert-message { min-width: 0; }
+.service-account-info { display: grid; gap: 4px; }
+.service-account-info span { color: #52615b; font-size: 11px; }
+.service-account-info code { display: block; min-width: 0; overflow: hidden; color: #126d4c; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.copy-form-footer > .ant-btn { min-width: 210px; justify-self: end; }
 
 @media (max-width: 1023px) {
+  .login-page { grid-template-columns: 1fr; background: #f7f9f8; }
+  .login-visual { display: none; }
+  .login-form-side { padding: 28px; }
   .desktop-sider { display: none; }
   .mobile-header { height: 68px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid #e3e9e6; background: white; }
   .sheet-context-shell { width: min(100% - 40px, 900px); margin-top: 20px; }
   .page-shell { width: min(100% - 40px, 900px); padding-top: 30px; }
   .tool-grid { grid-template-columns: 1fr; }
   .result-panel .ant-card-body { min-height: 460px; }
+  .source-columns-heading { align-items: flex-start; }
+  .source-column-actions { margin-top: 4px; }
+  .copy-form-layout { grid-template-columns: 1fr; gap: 26px; }
+  .copy-form-section + .copy-form-section { padding: 26px 0 0; border-top: 1px solid #e5eae7; border-left: 0; }
   .ant-drawer-body { position: relative; padding: 12px !important; }.ant-drawer-body .sidebar-footer { bottom: 4px; }
 }
 
 @media (max-width: 640px) {
+  .login-form-side { min-height: 100dvh; padding: 16px; }
+  .login-card { border: 0; background: transparent; box-shadow: none !important; }
+  .login-card .ant-card-body { padding: 20px 4px; }
   .mobile-header { height: 62px; padding: 0 16px; }
   .brand-mark { width: 36px; height: 36px; }
   .sheet-context-shell { width: calc(100% - 24px); margin-top: 12px; }
@@ -119,8 +192,19 @@ button, a, .ant-menu-item { touch-action: manipulation; }
   .sheet-context-actions .ant-btn-primary span:not(.anticon) { display: inline; }
   .page-shell { width: calc(100% - 24px); padding: 24px 0 40px; }
   .page-heading { display: block; margin-bottom: 22px; }.page-heading > .ant-tag { margin-top: 14px; }
+  .source-column-actions { display: grid; grid-template-columns: 1fr 1fr; margin-top: 18px; }
+  .source-column-actions .ant-btn { min-width: 0; padding-inline: 10px; font-size: 11px; }
+  .source-columns-panel .ant-card-body { padding: 14px; }
+  .excel-column-title { height: 62px; }
+  .excel-legend { align-items: flex-start; flex-wrap: wrap; gap: 8px 14px; }
+  .excel-legend small { width: 100%; margin-left: 0; }
   .page-heading h1 { margin-top: 4px !important; }.page-heading p { font-size: 14px; line-height: 1.55; }
   .panel .ant-card-body { padding: 18px; }
+  .copy-form-panel .ant-card-body { padding: 18px; }
+  .copy-form-footer > .ant-btn { width: 100%; justify-self: stretch; }
+  .copy-info .ant-alert-content { min-width: 0; }
+  .copy-info .ant-alert-action { margin-inline-start: 8px; }
+  .copy-info .ant-alert-action .ant-btn span:not(.anticon) { display: none; }
   .field-grid, .field-grid:has(> :nth-child(3)) { grid-template-columns: 1fr 1fr; }
   .field-grid:has(> :nth-child(3)) > :first-child { grid-column: 1 / -1; }
   .empty-result { min-height: 250px; }

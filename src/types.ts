@@ -42,3 +42,30 @@ export type GoogleSheetConfig = {
   createdAt: string
   updatedAt: string
 }
+
+export type CopySourceSheetInput = {
+  sourceGoogleSheetId: string
+  sourceSheetName: string
+  targetSheetName?: string
+  sourceColumns?: Record<string, string>
+}
+
+export type CopySourceSheetResult = {
+  success: true
+  copiedRows: number
+  copiedMergedRanges: number
+}
+
+export type AuthSession = {
+  success: true
+  user: {
+    username: string
+  }
+  accessToken: string
+  refreshToken: string
+}
+
+export type SourceColumnConfig = {
+  defaultSourceColumns: Record<string, string>
+  sourceColumns: Record<string, string>
+}

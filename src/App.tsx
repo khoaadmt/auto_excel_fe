@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
-  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, FileExcelOutlined,
-  MenuOutlined, SettingOutlined, SwapOutlined,
+  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, CopyOutlined, FileExcelOutlined,
+  LogoutOutlined, MenuOutlined, SettingOutlined, SwapOutlined, TableOutlined,
 } from '@ant-design/icons'
 import { Button, ConfigProvider, Drawer, Layout, Menu, Tag, Typography } from 'antd'
 import type { MenuProps, TableProps } from 'antd'
@@ -10,17 +10,22 @@ import { ToolPage } from './components/ToolPage'
 import { ResponsiveResults } from './components/ResponsiveResults'
 import { UnitRules } from './components/UnitRules'
 import { GoogleSheetContext } from './components/GoogleSheetContext'
+import { CopySourceSheet } from './components/CopySourceSheet'
+import { Login } from './components/Login'
+import { SourceColumns } from './components/SourceColumns'
 import type { ColumnDefaults, ModelInvalidRow, PackageGroup, UnitInvalidRow } from './types'
 
-type Page = 'units' | 'model' | 'packages' | 'rules'
+type Page = 'copy' | 'units' | 'model' | 'packages' | 'source-columns' | 'rules'
 
 const menuItems: MenuProps['items'] = [
   { type: 'group', label: 'DATA OPERATIONS', children: [
+    { key: 'copy', icon: <CopyOutlined />, label: 'COPY SOURCE SHEET' },
     { key: 'units', icon: <AuditOutlined />, label: 'CHECK UNITS' },
     { key: 'model', icon: <SwapOutlined />, label: 'CHECK MODEL & BRAND' },
     { key: 'packages', icon: <BoxPlotOutlined />, label: 'SUM PACKAGES' },
   ] },
   { type: 'group', label: 'CONFIGURATION', children: [
+    { key: 'source-columns', icon: <TableOutlined />, label: 'SOURCE COLUMNS' },
     { key: 'rules', icon: <SettingOutlined />, label: 'UNIT RULES' },
   ] },
 ]
@@ -47,6 +52,7 @@ const packageColumns: TableProps<PackageGroup>['columns'] = [
 ]
 
 export function App() {
+  const [authenticated, setAuthenticated] = useState(api.hasSession)
   const [page, setPage] = useState<Page>('units')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [defaults, setDefaults] = useState<ColumnDefaults>({
@@ -56,7 +62,14 @@ export function App() {
   })
 
   useEffect(() => { document.querySelector<HTMLElement>('#main-content')?.focus() }, [page])
-  useEffect(() => { api.defaults().then(setDefaults).catch(() => undefined) }, [])
+  useEffect(() => {
+    if (authenticated) api.defaults().then(setDefaults).catch(() => undefined)
+  }, [authenticated])
+  useEffect(() => {
+    const sessionExpired = () => setAuthenticated(false)
+    window.addEventListener('excelflow:auth-expired', sessionExpired)
+    return () => window.removeEventListener('excelflow:auth-expired', sessionExpired)
+  }, [])
 
   const navigate: MenuProps['onClick'] = ({ key }) => {
     setPage(key as Page)
@@ -65,7 +78,7 @@ export function App() {
 
   const nav = <Menu mode="inline" selectedKeys={[page]} items={menuItems} onClick={navigate} />
 
-  const content = page === 'units' ? (
+  const content = page === 'copy' ? <CopySourceSheet /> : page === 'units' ? (
     <ToolPage key={`units-${JSON.stringify(defaults.checkUnits)}`} eyebrow="DATA VALIDATION" title="CHECK UNITS"
       description="Đối chiếu đơn vị đóng gói trong mô tả hàng hóa với cột UNIT."
       fields={[{ name: 'DESCRIPTION OF GOODS', label: 'DESCRIPTION OF GOODS', defaultValue: defaults.checkUnits['DESCRIPTION OF GOODS'] }, { name: 'UNIT', label: 'UNIT', defaultValue: defaults.checkUnits.UNIT }]}
@@ -95,7 +108,7 @@ export function App() {
         card={(group, i) => <div className="result-card" key={i}><a href={group.link}>{group.link}</a>
           <div><span>Dòng: {group.rowNumbers.join(', ')}</span><strong>{group.totalPackages} kiện</strong></div></div>} />}
     />
-  ) : <UnitRules />
+  ) : page === 'source-columns' ? <SourceColumns /> : <UnitRules />
 
   return (
     <ConfigProvider theme={{ token: {
@@ -103,12 +116,14 @@ export function App() {
       fontFamily: "'Inter', 'Segoe UI', sans-serif", colorText: '#17201d',
       colorBgLayout: '#f5f7f6', controlHeightLG: 46,
     }, components: { Button: { primaryShadow: 'none' }, Layout: { siderBg: '#ffffff' }, Menu: { itemHeight: 46, itemBorderRadius: 8 } } }}>
+      {!authenticated ? <Login onSuccess={() => setAuthenticated(true)} /> : (
+      <>
       <a href="#main-content" className="skip-link">Bỏ qua đến nội dung chính</a>
       <Layout className="app-layout">
         <Layout.Sider width={288} className="desktop-sider">
           <Brand />
           <nav aria-label="Điều hướng chính">{nav}</nav>
-          <SidebarFooter />
+          <SidebarFooter onLogout={api.logout} />
         </Layout.Sider>
         <Layout>
           <header className="mobile-header">
@@ -123,8 +138,10 @@ export function App() {
       </Layout>
       <Drawer placement="left" width={300} open={drawerOpen} onClose={() => setDrawerOpen(false)}
         closeIcon={<CloseOutlined />} title={<Brand compact />}>
-        <nav aria-label="Điều hướng mobile">{nav}</nav><SidebarFooter />
+        <nav aria-label="Điều hướng mobile">{nav}</nav><SidebarFooter onLogout={api.logout} />
       </Drawer>
+      </>
+      )}
     </ConfigProvider>
   )
 }
@@ -134,6 +151,9 @@ function Brand({ compact = false }: { compact?: boolean }) {
     <div><Typography.Title level={4}>ExcelFlow</Typography.Title>{!compact && <span>Data operations</span>}</div></div>
 }
 
-function SidebarFooter() {
-  return <div className="sidebar-footer"><BarsOutlined /><div><strong>Excel đã kết nối</strong><span>Sẵn sàng xử lý dữ liệu</span></div><i /></div>
+function SidebarFooter({ onLogout }: { onLogout: () => void }) {
+  return <div className="sidebar-footer"><BarsOutlined /><div><strong>{api.currentUser()?.username ?? 'Đã đăng nhập'}</strong>
+    <span>Sẵn sàng xử lý dữ liệu</span></div>
+    <Button type="text" size="small" danger icon={<LogoutOutlined />} aria-label="Đăng xuất" onClick={onLogout} />
+  </div>
 }
