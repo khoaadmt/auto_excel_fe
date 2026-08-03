@@ -1,9 +1,9 @@
 import type {
-  AuthSession, ColumnDefaults, CopySourceSheetInput, CopySourceSheetResult, GoogleSheetConfig,
+  AuthSession, CheckSheetErrorsResult, ColumnDefaults, CopySourceSheetInput, CopySourceSheetResult, GoogleSheetConfig,
   SourceColumnConfig, UnitRule,
 } from './types'
 
-const API_BASE_URL = (import.meta.env.API_BASE_URL || '/api').replace(/\/+$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
 const AUTH_STORAGE_KEY = 'excelflow.auth'
 
 const readSession = (): AuthSession | null => {
@@ -24,13 +24,44 @@ const clearSession = () => {
   window.dispatchEvent(new Event('excelflow:auth-expired'))
 }
 
-const responseError = async (response: Response) => {
+const actionByPath = (path: string) => {
+  if (path.startsWith('/auth/login')) return 'đăng nhập'
+  if (path.startsWith('/auth/refresh')) return 'làm mới phiên đăng nhập'
+  if (path.startsWith('/google-sheet-config')) return 'cập nhật kết nối Google Sheet'
+  if (path.startsWith('/copy-source-sheet')) return 'sao chép dữ liệu'
+  if (path.startsWith('/check-sheet-errors')) return 'kiểm tra lỗi trong sheet'
+  if (path.startsWith('/check-units')) return 'kiểm tra đơn vị'
+  if (path.startsWith('/check-model-brand')) return 'kiểm tra model và thương hiệu'
+  if (path.startsWith('/sum-packages')) return 'tính tổng số kiện'
+  if (path.startsWith('/source-columns')) return 'cập nhật cấu hình cột nguồn'
+  if (path.startsWith('/unit-configs')) return 'cập nhật quy tắc đơn vị'
+  return 'xử lý yêu cầu'
+}
+
+const responseError = (response: Response, path: string) => {
+  const action = actionByPath(path)
+  if (response.status === 400) {
+    if (path === '/check-sheet-errors') return new Error('Không tìm thấy tab này. Vui lòng kiểm tra lại tên sheet.')
+    return new Error(`Thông tin chưa hợp lệ nên không thể ${action}. Vui lòng kiểm tra lại dữ liệu đã nhập.`)
+  }
+  if (response.status === 401) {
+    return new Error(path === '/auth/login'
+      ? 'Tên đăng nhập hoặc mật khẩu không đúng.'
+      : 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
+  }
+  if (response.status === 403) return new Error(`Bạn chưa có quyền ${action}. Vui lòng kiểm tra quyền truy cập Google Sheet.`)
+  if (response.status === 404) return new Error(`Chức năng ${action} hiện chưa khả dụng. Vui lòng liên hệ quản trị viên.`)
+  if (response.status === 409) return new Error(`Dữ liệu đã thay đổi nên chưa thể ${action}. Vui lòng tải lại và thử lại.`)
+  if (response.status === 429) return new Error('Bạn thao tác quá nhanh. Vui lòng chờ một chút rồi thử lại.')
+  if (response.status >= 500) return new Error(`Máy chủ đang gặp sự cố khi ${action}. Vui lòng thử lại sau.`)
+  return new Error(`Không thể ${action}. Vui lòng thử lại.`)
+}
+
+const fetchApi = async (path: string, options?: RequestInit) => {
   try {
-    const body = await response.json() as { message?: string | string[] }
-    const detail = Array.isArray(body.message) ? body.message.join(', ') : body.message
-    return new Error(detail || `Yêu cầu thất bại (${response.status})`)
+    return await fetch(`${API_BASE_URL}${path}`, options)
   } catch {
-    return new Error(`Yêu cầu thất bại (${response.status})`)
+    throw new Error('Không thể kết nối đến máy chủ. Vui lòng kiểm tra mạng và thử lại.')
   }
 }
 
@@ -44,7 +75,7 @@ const refreshSession = async (): Promise<AuthSession> => {
     throw new Error('Phiên đăng nhập đã hết hạn')
   }
 
-  refreshPromise = fetch(`${API_BASE_URL}/auth/refresh`, {
+  refreshPromise = fetchApi('/auth/refresh', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
@@ -70,7 +101,7 @@ const request = async <T>(
   retryAfterRefresh = true,
 ): Promise<T> => {
   const accessToken = readSession()?.accessToken
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchApi(path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -83,7 +114,7 @@ const request = async <T>(
     return request<T>(path, options, notFoundAsNull, false)
   }
   if (response.status === 404 && notFoundAsNull) return null as T
-  if (!response.ok) throw await responseError(response)
+  if (!response.ok) throw responseError(response, path)
   if (response.status === 204) return undefined as T
   return response.json() as Promise<T>
 }
@@ -92,12 +123,12 @@ export const api = {
   hasSession: () => Boolean(readSession()?.accessToken && readSession()?.refreshToken),
   currentUser: () => readSession()?.user ?? null,
   login: async (username: string, password: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetchApi('/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     })
-    if (!response.ok) throw await responseError(response)
+    if (!response.ok) throw responseError(response, '/auth/login')
     const session = await response.json() as AuthSession
     saveSession(session)
     return session
@@ -128,6 +159,10 @@ export const api = {
   defaults: () => request<ColumnDefaults>('/unit-configs/column-defaults'),
   checkUnits: (body: Record<string, string>) =>
     request<{ success: boolean; checkedRows: number; invalidRows: import('./types').UnitInvalidRow[] }>('/check-units', {
+      method: 'POST', body: JSON.stringify(body),
+    }),
+  checkSheetErrors: (body: Record<string, string>) =>
+    request<CheckSheetErrorsResult>('/check-sheet-errors', {
       method: 'POST', body: JSON.stringify(body),
     }),
   checkModelBrand: (body: Record<string, string>) =>

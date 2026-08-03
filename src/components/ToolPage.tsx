@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react'
-import { ArrowRightOutlined, CheckCircleFilled, InfoCircleOutlined, ReloadOutlined } from '@ant-design/icons'
+import { ArrowRightOutlined, CheckCircleFilled, InfoCircleOutlined } from '@ant-design/icons'
 import { Alert, Button, Card, Form, Input, Space, Tag, Typography, message } from 'antd'
 
 type Field = { name: string; label: string; defaultValue: string }
@@ -10,22 +10,27 @@ type Props<T> = {
   fields: Field[]
   run: (values: Record<string, string>) => Promise<T>
   result: (data: T) => ReactNode
+  setupDescription?: string
+  infoMessage?: string | null
+  resultDescription?: string
 }
 
-export function ToolPage<T>({ eyebrow, title, description, fields, run, result }: Props<T>) {
+export function ToolPage<T>({ eyebrow, title, description, fields, run, result,
+  setupDescription = 'Chọn sheet và kiểm tra lại vị trí các cột.',
+  infoMessage = 'Có thể để trống vị trí cột để sử dụng cấu hình mặc định đã lưu.',
+  resultDescription = 'Chi tiết các dòng cần bạn xem lại.',
+}: Props<T>) {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<T | null>(null)
-  const [error, setError] = useState('')
 
   const submit = async (values: Record<string, string>) => {
     setLoading(true)
-    setError('')
     try {
       setData(await run(values))
       message.success('Đã xử lý dữ liệu thành công')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể kết nối máy chủ')
+      message.error(err instanceof Error ? err.message : 'Không thể xử lý dữ liệu. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -46,7 +51,7 @@ export function ToolPage<T>({ eyebrow, title, description, fields, run, result }
         <Card className="panel form-panel">
           <div className="panel-title">
             <div className="step-number">1</div>
-            <div><h2>Thiết lập dữ liệu</h2><p>Chọn sheet và kiểm tra lại vị trí các cột.</p></div>
+            <div><h2>Thiết lập dữ liệu</h2><p>{setupDescription}</p></div>
           </div>
           <Form form={form} layout="vertical" onFinish={submit} requiredMark={false}>
             <Form.Item name="sheetName" label="Tên sheet" initialValue="data" rules={[{ required: true, message: 'Vui lòng nhập tên sheet' }]}>
@@ -62,10 +67,8 @@ export function ToolPage<T>({ eyebrow, title, description, fields, run, result }
                 </Form.Item>
               ))}
             </div>
-            <Alert className="info-alert" type="info" showIcon icon={<InfoCircleOutlined />}
-              message="Có thể để trống vị trí cột để sử dụng cấu hình mặc định đã lưu." />
-            {error && <Alert className="error-alert" type="error" showIcon message={error}
-              action={<Button size="small" icon={<ReloadOutlined />} onClick={() => form.submit()}>Thử lại</Button>} />}
+            {infoMessage && <Alert className="info-alert" type="info" showIcon icon={<InfoCircleOutlined />}
+              message={infoMessage} />}
             <Button block size="large" type="primary" htmlType="submit" loading={loading} icon={<ArrowRightOutlined />}>
               {loading ? 'Đang kiểm tra...' : 'Bắt đầu kiểm tra'}
             </Button>
@@ -75,7 +78,7 @@ export function ToolPage<T>({ eyebrow, title, description, fields, run, result }
         <Card className="panel result-panel">
           <div className="panel-title">
             <div className="step-number secondary">2</div>
-            <div><h2>Kết quả xử lý</h2><p>Chi tiết các dòng cần bạn xem lại.</p></div>
+            <div><h2>Kết quả xử lý</h2><p>{resultDescription}</p></div>
           </div>
           {data ? result(data) : (
             <div className="empty-result">

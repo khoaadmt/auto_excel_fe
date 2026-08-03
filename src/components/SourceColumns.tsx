@@ -13,7 +13,7 @@ export function SourceColumns() {
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState('')
+  const [loadError, setLoadError] = useState(false)
 
   const applyConfig = (next: SourceColumnConfig) => {
     setConfig(next)
@@ -22,11 +22,12 @@ export function SourceColumns() {
 
   const load = async () => {
     setLoading(true)
-    setError('')
+    setLoadError(false)
     try {
       applyConfig(await api.sourceColumns())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể tải cấu hình cột nguồn')
+      setLoadError(true)
+      message.error(err instanceof Error ? err.message : 'Không thể tải cấu hình cột nguồn. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -42,7 +43,10 @@ export function SourceColumns() {
         }
       })
       .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : 'Không thể tải cấu hình cột nguồn')
+        if (active) {
+          setLoadError(true)
+          message.error(err instanceof Error ? err.message : 'Không thể tải cấu hình cột nguồn. Vui lòng thử lại.')
+        }
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -126,13 +130,13 @@ export function SourceColumns() {
             : <Tag icon={<CheckOutlined />} color="success">Đã đồng bộ</Tag>}
         </div>
 
-        {loading ? <Skeleton active paragraph={{ rows: 5 }} /> : error ? (
-          <Alert type="error" showIcon message="Không thể tải cấu hình" description={error}
+        {loading ? <Skeleton active paragraph={{ rows: 5 }} /> : loadError ? (
+          <Alert type="error" showIcon message="Chưa thể tải cấu hình cột nguồn."
             action={<Button icon={<ReloadOutlined />} onClick={load}>Thử lại</Button>} />
         ) : config ? (
           <>
             <div className="excel-scroll" tabIndex={0} aria-label="Bảng cấu hình cột nguồn">
-              <div className="excel-sheet" style={{ gridTemplateColumns: `repeat(${titles.length}, minmax(108px, 1fr))` }}>
+              <div className="excel-sheet" style={{ gridTemplateColumns: `repeat(${titles.length}, minmax(88px, 1fr))` }}>
                 {titles.map((title) => {
                   const changedFromSaved = values[title] !== config.sourceColumns[title]
                   const changedFromDefault = values[title] !== config.defaultSourceColumns[title]

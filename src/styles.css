@@ -127,8 +127,8 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .excel-column-letter .ant-input:hover, .excel-column-letter .ant-input:focus { border-color: #16845b; background: #fff; }
 .excel-column.is-edited .excel-column-letter { background: #fff4d6; }
 .excel-column.is-edited .excel-column-letter .ant-input { color: #965b05; }
-.excel-column-title { height: 66px; display: flex; align-items: center; justify-content: center; padding: 7px 6px; overflow: hidden; border-bottom: 1px solid #e1e7e4; color: #26322d; font-size: 10px; font-weight: 700; line-height: 1.35; text-align: center; text-overflow: ellipsis; }
-.excel-column-default { height: 38px; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 7px; color: #84908b; background: #fafcfb; font-size: 9px; white-space: nowrap; }
+.excel-column-title { height: 66px; display: flex; align-items: center; justify-content: center; padding: 5px 2px; overflow: hidden; border-bottom: 1px solid #e1e7e4; color: #26322d; font-size: 10px; font-weight: 700; line-height: 1.35; text-align: center; text-overflow: ellipsis; }
+.excel-column-default { height: 38px; display: flex; align-items: center; justify-content: center; gap: 3px; padding: 4px 2px; color: #84908b; background: #fafcfb; font-size: 9px; white-space: nowrap; }
 .excel-column-default strong { color: #596660; font-family: "SFMono-Regular", Consolas, monospace; }
 .excel-column-default i, .default-dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #d97706; }
 .source-columns-error { margin-top: 14px; }

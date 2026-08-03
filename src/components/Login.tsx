@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   FileExcelOutlined, LockOutlined, LoginOutlined, SafetyCertificateOutlined, UserOutlined,
 } from '@ant-design/icons'
-import { Alert, Button, Card, Form, Input, Typography } from 'antd'
+import { Button, Card, Form, Input, Typography, message } from 'antd'
 import { api } from '../api'
 
 type Props = {
@@ -11,16 +11,14 @@ type Props = {
 
 export function Login({ onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
   const submit = async ({ username, password }: { username: string; password: string }) => {
     setLoading(true)
-    setError('')
     try {
       await api.login(username.trim(), password)
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Không thể đăng nhập')
+      message.error(err instanceof Error ? err.message : 'Không thể đăng nhập. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -56,7 +54,6 @@ export function Login({ onSuccess }: Props) {
               rules={[{ required: true, message: 'Vui lòng nhập mật khẩu' }]}>
               <Input.Password prefix={<LockOutlined />} autoComplete="current-password" placeholder="Mật khẩu" />
             </Form.Item>
-            {error && <Alert className="login-error" type="error" showIcon message={error} />}
             <Button block type="primary" htmlType="submit" loading={loading} icon={<LoginOutlined />}>
               {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
             </Button>

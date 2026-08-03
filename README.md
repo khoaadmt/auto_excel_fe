@@ -6,7 +6,7 @@
 
 ```bash
 docker build \
-  --build-arg API_BASE_URL=/api \
+  --build-arg VITE_API_BASE_URL=/api \
   -t <dockerhub-username>/auto-excel-fe:latest .
 
 docker run --rm -p 8080:80 <dockerhub-username>/auto-excel-fe:latest
@@ -14,7 +14,7 @@ docker run --rm -p 8080:80 <dockerhub-username>/auto-excel-fe:latest
 
 Mở `http://localhost:8080`.
 
-Khi dùng `API_BASE_URL=/api`, reverse proxy hoặc Ingress của môi trường
+Khi dùng `VITE_API_BASE_URL=/api`, reverse proxy hoặc Ingress của môi trường
 triển khai cần chuyển các request `/api/*` tới backend.
 
 Đẩy image lên Docker Hub:

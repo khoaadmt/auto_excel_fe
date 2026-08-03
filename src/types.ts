@@ -31,6 +31,19 @@ export type PackageGroup = {
   rowNumbers: number[]
 }
 
+export type SheetCellError = {
+  cell: string
+  type: string
+  message: string
+}
+
+export type CheckSheetErrorsResult = {
+  sheetName: string
+  hasErrors: boolean
+  errorCount: number
+  errors: SheetCellError[]
+}
+
 export type UnitRule = {
   id: string | number
   packageUnit: string

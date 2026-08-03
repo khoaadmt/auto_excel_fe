@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import {
-  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, CopyOutlined, FileExcelOutlined,
+  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, CopyOutlined, ExceptionOutlined, FileExcelOutlined,
   LogoutOutlined, MenuOutlined, SettingOutlined, SwapOutlined, TableOutlined,
 } from '@ant-design/icons'
-import { Button, ConfigProvider, Drawer, Layout, Menu, Tag, Typography } from 'antd'
+import { Button, ConfigProvider, Drawer, Layout, Menu, Tag, Typography, message } from 'antd'
 import type { MenuProps, TableProps } from 'antd'
 import { api } from './api'
 import { ToolPage } from './components/ToolPage'
@@ -13,13 +13,14 @@ import { GoogleSheetContext } from './components/GoogleSheetContext'
 import { CopySourceSheet } from './components/CopySourceSheet'
 import { Login } from './components/Login'
 import { SourceColumns } from './components/SourceColumns'
-import type { ColumnDefaults, ModelInvalidRow, PackageGroup, UnitInvalidRow } from './types'
+import type { ColumnDefaults, ModelInvalidRow, PackageGroup, SheetCellError, UnitInvalidRow } from './types'
 
-type Page = 'copy' | 'units' | 'model' | 'packages' | 'source-columns' | 'rules'
+type Page = 'copy' | 'sheet-errors' | 'units' | 'model' | 'packages' | 'source-columns' | 'rules'
 
 const menuItems: MenuProps['items'] = [
   { type: 'group', label: 'DATA OPERATIONS', children: [
     { key: 'copy', icon: <CopyOutlined />, label: 'COPY SOURCE SHEET' },
+    { key: 'sheet-errors', icon: <ExceptionOutlined />, label: 'CHECK SHEET ERRORS' },
     { key: 'units', icon: <AuditOutlined />, label: 'CHECK UNITS' },
     { key: 'model', icon: <SwapOutlined />, label: 'CHECK MODEL & BRAND' },
     { key: 'packages', icon: <BoxPlotOutlined />, label: 'SUM PACKAGES' },
@@ -51,6 +52,12 @@ const packageColumns: TableProps<PackageGroup>['columns'] = [
   { title: 'TOTAL PACKAGES', dataIndex: 'totalPackages', align: 'right', render: (v) => <strong className="package-total">{v}</strong> },
 ]
 
+const sheetErrorColumns: TableProps<SheetCellError>['columns'] = [
+  { title: 'CELL', dataIndex: 'cell', width: 90, render: (v) => <Tag color="error" className="code-tag">{v}</Tag> },
+  { title: 'ERROR TYPE', dataIndex: 'type', width: 190, render: (v) => <Tag color="warning" className="code-tag">{v}</Tag> },
+  { title: 'MESSAGE', dataIndex: 'message', render: (v) => <span className="multiline">{v}</span> },
+]
+
 export function App() {
   const [authenticated, setAuthenticated] = useState(api.hasSession)
   const [page, setPage] = useState<Page>('units')
@@ -63,7 +70,9 @@ export function App() {
 
   useEffect(() => { document.querySelector<HTMLElement>('#main-content')?.focus() }, [page])
   useEffect(() => {
-    if (authenticated) api.defaults().then(setDefaults).catch(() => undefined)
+    if (authenticated) api.defaults().then(setDefaults).catch((error) => {
+      message.error(error instanceof Error ? error.message : 'Không thể tải cấu hình cột mặc định. Vui lòng thử lại.')
+    })
   }, [authenticated])
   useEffect(() => {
     const sessionExpired = () => setAuthenticated(false)
@@ -78,7 +87,24 @@ export function App() {
 
   const nav = <Menu mode="inline" selectedKeys={[page]} items={menuItems} onClick={navigate} />
 
-  const content = page === 'copy' ? <CopySourceSheet /> : page === 'units' ? (
+  const content = page === 'copy' ? <CopySourceSheet /> : page === 'sheet-errors' ? (
+    <ToolPage eyebrow="DATA VALIDATION" title="CHECK SHEET ERRORS"
+      description="Quét toàn bộ ô đang sử dụng trong sheet để phát hiện lỗi công thức gốc của Google Sheets."
+      fields={[]}
+      setupDescription="Nhập chính xác tên tab cần quét trong bảng tính đã kết nối."
+      infoMessage="Hệ thống sẽ kiểm tra các lỗi như #DIV/0!, #N/A, #REF! và #VALUE! trong mọi ô đang sử dụng."
+      resultDescription="Danh sách ô lỗi và thông báo chi tiết từ Google Sheets."
+      run={api.checkSheetErrors}
+      result={(data) => <ResponsiveResults items={data.errors} columns={sheetErrorColumns}
+        emptyDescription="Sheet không có lỗi công thức"
+        summary={[{ label: 'sheet đã kiểm tra', value: data.sheetName, tone: 'success' },
+          { label: 'ô có lỗi', value: data.errorCount, tone: data.hasErrors ? 'warning' : 'success' }]}
+        card={(error) => <div className="result-card sheet-error-card" key={error.cell}>
+          <div><Tag color="error" className="code-tag">{error.cell}</Tag><Tag color="warning" className="code-tag">{error.type}</Tag></div>
+          <p>{error.message}</p>
+        </div>} />}
+    />
+  ) : page === 'units' ? (
     <ToolPage key={`units-${JSON.stringify(defaults.checkUnits)}`} eyebrow="DATA VALIDATION" title="CHECK UNITS"
       description="Đối chiếu đơn vị đóng gói trong mô tả hàng hóa với cột UNIT."
       fields={[{ name: 'DESCRIPTION OF GOODS', label: 'DESCRIPTION OF GOODS', defaultValue: defaults.checkUnits['DESCRIPTION OF GOODS'] }, { name: 'UNIT', label: 'UNIT', defaultValue: defaults.checkUnits.UNIT }]}

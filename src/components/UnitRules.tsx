@@ -4,11 +4,6 @@ import { Alert, Button, Card, Form, Input, Modal, Popconfirm, Table, Tag, Typogr
 import { api } from '../api'
 import type { UnitRule } from '../types'
 
-const seed: UnitRule[] = [
-  { id: 1, packageUnit: 'PCS/BAG', expectedUnit: 'BAG' },
-  { id: 2, packageUnit: 'PCS/SET', expectedUnit: 'SET' },
-]
-
 export function UnitRules() {
   const [rules, setRules] = useState<UnitRule[]>([])
   const [loading, setLoading] = useState(true)
@@ -17,7 +12,9 @@ export function UnitRules() {
   const [form] = Form.useForm()
 
   useEffect(() => {
-    api.rules().then(setRules).catch(() => setRules(seed)).finally(() => setLoading(false))
+    api.rules().then(setRules).catch((error) => {
+      message.error(error instanceof Error ? error.message : 'Không thể tải danh sách quy tắc. Vui lòng thử lại.')
+    }).finally(() => setLoading(false))
   }, [])
 
   const save = async (values: Omit<UnitRule, 'id'>) => {
@@ -29,18 +26,22 @@ export function UnitRules() {
         const created = await api.createRule(values)
         setRules((items) => [...items, created])
       }
-    } catch {
-      if (editing) setRules((items) => items.map((r) => r.id === editing.id ? { ...r, ...values } : r))
-      else setRules((items) => [...items, { id: Date.now(), ...values }])
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Không thể lưu quy tắc. Vui lòng thử lại.')
+      return
     }
     message.success(editing ? 'Đã cập nhật quy tắc' : 'Đã thêm quy tắc mới')
     setOpen(false)
   }
 
   const remove = async (rule: UnitRule) => {
-    try { await api.deleteRule(rule.id) } catch { /* demo fallback */ }
-    setRules((items) => items.filter((r) => r.id !== rule.id))
-    message.success('Đã xóa quy tắc')
+    try {
+      await api.deleteRule(rule.id)
+      setRules((items) => items.filter((r) => r.id !== rule.id))
+      message.success('Đã xóa quy tắc')
+    } catch (error) {
+      message.error(error instanceof Error ? error.message : 'Không thể xóa quy tắc. Vui lòng thử lại.')
+    }
   }
 
   const edit = (rule?: UnitRule) => {

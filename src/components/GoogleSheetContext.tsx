@@ -26,8 +26,9 @@ export function GoogleSheetContext() {
     setLoadError(false)
     try {
       setConfig(await api.googleSheetConfig())
-    } catch {
+    } catch (error) {
       setLoadError(true)
+      message.error(error instanceof Error ? error.message : 'Không thể tải cấu hình Google Sheet. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -37,7 +38,12 @@ export function GoogleSheetContext() {
     let active = true
     api.googleSheetConfig()
       .then((next) => { if (active) setConfig(next) })
-      .catch(() => { if (active) setLoadError(true) })
+      .catch((error) => {
+        if (active) {
+          setLoadError(true)
+          message.error(error instanceof Error ? error.message : 'Không thể tải cấu hình Google Sheet. Vui lòng thử lại.')
+        }
+      })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
   }, [])
