@@ -3,7 +3,7 @@ import type {
   SourceColumnConfig, UnitRule,
 } from './types'
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || 'http://localhost:5000'
+const API_BASE_URL = (import.meta.env.API_BASE_URL || '/api').replace(/\/+$/, '')
 const AUTH_STORAGE_KEY = 'excelflow.auth'
 
 const readSession = (): AuthSession | null => {
@@ -44,7 +44,7 @@ const refreshSession = async (): Promise<AuthSession> => {
     throw new Error('Phiên đăng nhập đã hết hạn')
   }
 
-  refreshPromise = fetch(`${BACKEND_URL}/api/auth/refresh`, {
+  refreshPromise = fetch(`${API_BASE_URL}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
@@ -70,7 +70,7 @@ const request = async <T>(
   retryAfterRefresh = true,
 ): Promise<T> => {
   const accessToken = readSession()?.accessToken
-  const response = await fetch(`${BACKEND_URL}${path}`, {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const api = {
   hasSession: () => Boolean(readSession()?.accessToken && readSession()?.refreshToken),
   currentUser: () => readSession()?.user ?? null,
   login: async (username: string, password: string) => {
-    const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
@@ -103,43 +103,43 @@ export const api = {
     return session
   },
   logout: clearSession,
-  sourceColumns: () => request<SourceColumnConfig>('/api/source-columns'),
+  sourceColumns: () => request<SourceColumnConfig>('/source-columns'),
   updateSourceColumns: (sourceColumns: Record<string, string>) =>
-    request<SourceColumnConfig>('/api/source-columns', {
+    request<SourceColumnConfig>('/source-columns', {
       method: 'PATCH', body: JSON.stringify({ sourceColumns }),
     }),
   resetSourceColumns: () =>
-    request<SourceColumnConfig>('/api/source-columns/reset', { method: 'POST' }),
+    request<SourceColumnConfig>('/source-columns/reset', { method: 'POST' }),
   copySourceSheet: (body: CopySourceSheetInput) =>
-    request<CopySourceSheetResult>('/api/copy-source-sheet', {
+    request<CopySourceSheetResult>('/copy-source-sheet', {
       method: 'POST', body: JSON.stringify(body),
     }),
-  googleSheetConfig: () => request<GoogleSheetConfig | null>('/api/google-sheet-config', undefined, true),
+  googleSheetConfig: () => request<GoogleSheetConfig | null>('/google-sheet-config', undefined, true),
   createGoogleSheetConfig: (googleSheetId: string) =>
-    request<GoogleSheetConfig>('/api/google-sheet-config', {
+    request<GoogleSheetConfig>('/google-sheet-config', {
       method: 'POST', body: JSON.stringify({ googleSheetId }),
     }),
   updateGoogleSheetConfig: (googleSheetId: string) =>
-    request<GoogleSheetConfig>('/api/google-sheet-config', {
+    request<GoogleSheetConfig>('/google-sheet-config', {
       method: 'PATCH', body: JSON.stringify({ googleSheetId }),
     }),
   deleteGoogleSheetConfig: () =>
-    request<void>('/api/google-sheet-config', { method: 'DELETE' }),
-  defaults: () => request<ColumnDefaults>('/api/unit-configs/column-defaults'),
+    request<void>('/google-sheet-config', { method: 'DELETE' }),
+  defaults: () => request<ColumnDefaults>('/unit-configs/column-defaults'),
   checkUnits: (body: Record<string, string>) =>
-    request<{ success: boolean; checkedRows: number; invalidRows: import('./types').UnitInvalidRow[] }>('/api/check-units', {
+    request<{ success: boolean; checkedRows: number; invalidRows: import('./types').UnitInvalidRow[] }>('/check-units', {
       method: 'POST', body: JSON.stringify(body),
     }),
   checkModelBrand: (body: Record<string, string>) =>
-    request<{ success: boolean; checkedRows: number; message: string; invalidRows: import('./types').ModelInvalidRow[] }>('/api/check-model-brand', {
+    request<{ success: boolean; checkedRows: number; message: string; invalidRows: import('./types').ModelInvalidRow[] }>('/check-model-brand', {
       method: 'POST', body: JSON.stringify(body),
     }),
   sumPackages: (body: Record<string, string>) =>
-    request<{ success: boolean; totalGroups: number; totalPackages: number; groups: import('./types').PackageGroup[] }>('/api/sum-packages', {
+    request<{ success: boolean; totalGroups: number; totalPackages: number; groups: import('./types').PackageGroup[] }>('/sum-packages', {
       method: 'POST', body: JSON.stringify(body),
     }),
-  rules: () => request<UnitRule[]>('/api/unit-configs'),
-  createRule: (body: Omit<UnitRule, 'id'>) => request<UnitRule>('/api/unit-configs', { method: 'POST', body: JSON.stringify(body) }),
-  updateRule: (id: UnitRule['id'], body: Partial<UnitRule>) => request<UnitRule>(`/api/unit-configs/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
-  deleteRule: (id: UnitRule['id']) => request<void>(`/api/unit-configs/${id}`, { method: 'DELETE' }),
+  rules: () => request<UnitRule[]>('/unit-configs'),
+  createRule: (body: Omit<UnitRule, 'id'>) => request<UnitRule>('/unit-configs', { method: 'POST', body: JSON.stringify(body) }),
+  updateRule: (id: UnitRule['id'], body: Partial<UnitRule>) => request<UnitRule>(`/unit-configs/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  deleteRule: (id: UnitRule['id']) => request<void>(`/unit-configs/${id}`, { method: 'DELETE' }),
 }

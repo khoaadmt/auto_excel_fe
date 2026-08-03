@@ -4,12 +4,12 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const backendUrl = env.BACKEND_URL || 'http://localhost:5000'
+  const apiBaseUrl = env.API_BASE_URL || '/api'
 
   return {
     plugins: [react(), tailwindcss()],
     define: {
-      'import.meta.env.BACKEND_URL': JSON.stringify(backendUrl.replace(/\/+$/, '')),
+      'import.meta.env.API_BASE_URL': JSON.stringify(apiBaseUrl.replace(/\/+$/, '')),
     },
     build: {
       rollupOptions: {
