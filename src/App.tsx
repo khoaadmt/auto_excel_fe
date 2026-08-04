@@ -40,16 +40,14 @@ const unitColumns: TableProps<UnitInvalidRow>['columns'] = [
 
 const modelColumns: TableProps<ModelInvalidRow>['columns'] = [
   { title: 'ROW', dataIndex: 'rowNumber', width: 70, render: (v) => <Tag>{v}</Tag> },
-  { title: 'DESCRIPTION OF GOODS', dataIndex: 'sourceValue', render: (v) => <span className="multiline">{v}</span> },
-  { title: 'SPM', dataIndex: 'referenceValue', render: (v) => <span className="multiline">{v}</span> },
   { title: 'MISMATCHES', dataIndex: 'mismatches', render: (items) => items.map((m: ModelInvalidRow['mismatches'][number]) =>
-    <Tag key={m.field} color="warning">{m.field}: {m.actual} → {m.expected}</Tag>) },
+    <Tag className="model-mismatch-tag" key={m.field} color="warning">{m.field}: {m.actual} → {m.expected}</Tag>) },
 ]
 
 const packageColumns: TableProps<PackageGroup>['columns'] = [
-  { title: 'LINK', dataIndex: 'link', ellipsis: true, render: (v) => <a href={v} target="_blank" rel="noreferrer">{v}</a> },
-  { title: 'ROWS', dataIndex: 'rowNumbers', render: (v: number[]) => v.join(', ') },
-  { title: 'TOTAL PACKAGES', dataIndex: 'totalPackages', align: 'right', render: (v) => <strong className="package-total">{v}</strong> },
+  { title: 'LINK', dataIndex: 'link', width: '68%', render: (v) => <a className="package-link" href={v} target="_blank" rel="noreferrer">{v}</a> },
+  { title: 'ROWS', dataIndex: 'rowNumbers', width: '17%', render: (v: number[]) => v.join(', ') },
+  { title: 'TOTAL PACKAGES', dataIndex: 'totalPackages', width: '15%', align: 'right', render: (v) => <strong className="package-total">{v}</strong> },
 ]
 
 const sheetErrorColumns: TableProps<SheetCellError>['columns'] = [
@@ -60,7 +58,7 @@ const sheetErrorColumns: TableProps<SheetCellError>['columns'] = [
 
 export function App() {
   const [authenticated, setAuthenticated] = useState(api.hasSession)
-  const [page, setPage] = useState<Page>('units')
+  const [page, setPage] = useState<Page>('copy')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [defaults, setDefaults] = useState<ColumnDefaults>({
     checkUnits: { 'DESCRIPTION OF GOODS': 'F', UNIT: 'K' },
@@ -121,8 +119,8 @@ export function App() {
       run={api.checkModelBrand}
       result={(data) => <ResponsiveResults items={data.invalidRows} columns={modelColumns}
         summary={[{ label: 'dòng đã kiểm tra', value: data.checkedRows, tone: 'success' }, { label: 'dòng có sai lệch', value: data.invalidRows.length, tone: 'warning' }]}
-        card={(row) => <div className="result-card" key={row.rowNumber}><Tag>Dòng {row.rowNumber}</Tag><p>{row.sourceValue}</p>
-          {row.mismatches.map((m) => <Tag color="warning" key={m.field}>{m.field}: {m.actual} → {m.expected}</Tag>)}</div>} />}
+        card={(row) => <div className="result-card" key={row.rowNumber}><Tag>Dòng {row.rowNumber}</Tag>
+          {row.mismatches.map((m) => <Tag className="model-mismatch-tag" color="warning" key={m.field}>{m.field}: {m.actual} → {m.expected}</Tag>)}</div>} />}
     />
   ) : page === 'packages' ? (
     <ToolPage key={`packages-${JSON.stringify(defaults.sumPackages)}`} eyebrow="DATA AGGREGATION" title="SUM PACKAGES"

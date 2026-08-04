@@ -89,6 +89,7 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .step-number.secondary { color: #4e5b56; background: #edf1ef; }
 .field-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 .field-grid:has(> :nth-child(3)) { grid-template-columns: repeat(3, 1fr); }
+.field-grid .ant-form-item-label { min-height: 46px; display: flex; align-items: flex-end; }
 .column-input input, .column-input { font-family: "SFMono-Regular", Consolas, monospace; font-weight: 700; text-align: center; }
 .ant-form-item-label label { color: #3f4b46 !important; font-size: 12px !important; font-weight: 650; }
 .info-alert { margin: 2px 0 20px; }
@@ -109,6 +110,8 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .summary-item .anticon { font-size: 18px; }.success-icon { color: #16845b; }.warning-icon { color: #d97706; }
 .summary-item strong, .summary-item span { display: block; }.summary-item strong { font-size: 17px; }.summary-item span { color: #78837e; font-size: 10px; }
 .multiline { white-space: pre-line; font-size: 12px; }.package-total { color: #16845b; font-size: 16px; }
+.package-link { white-space: normal; overflow-wrap: anywhere; }
+.model-mismatch-tag { max-width: 100%; margin-block: 2px; white-space: normal; overflow-wrap: anywhere; }
 .mobile-cards { display: none; }
 .rules-heading { align-items: flex-end; }.rules-alert { margin-bottom: 20px; }.rules-panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 .code-tag { font-family: "SFMono-Regular", Consolas, monospace; font-weight: 700; }
