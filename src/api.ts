@@ -1,5 +1,6 @@
 import type {
-  AuthSession, CheckSheetErrorsResult, ColumnDefaults, CopySourceSheetInput, CopySourceSheetResult, GoogleSheetConfig,
+  AuthSession, CheckSheetErrorsResult, CheckSourceSheetColumnsResult, ColumnDefaults, CopySourceSheetInput,
+  CopySourceSheetResult, GoogleSheetConfig, GoogleSheetNames,
   SourceColumnConfig, UnitRule,
 } from './types'
 
@@ -145,7 +146,13 @@ export const api = {
     request<CopySourceSheetResult>('/copy-source-sheet', {
       method: 'POST', body: JSON.stringify(body),
     }),
+  checkSourceSheetColumns: (body: Omit<CopySourceSheetInput, 'targetSheetName'>) =>
+    request<CheckSourceSheetColumnsResult>('/copy-source-sheet/check-columns', {
+      method: 'POST', body: JSON.stringify(body),
+    }),
   googleSheetConfig: () => request<GoogleSheetConfig | null>('/google-sheet-config', undefined, true),
+  sourceGoogleSheetNames: (sourceGoogleSheetId: string) =>
+    request<GoogleSheetNames>(`/copy-source-sheet/sheet-names?sourceGoogleSheetId=${encodeURIComponent(sourceGoogleSheetId)}`),
   createGoogleSheetConfig: (googleSheetId: string) =>
     request<GoogleSheetConfig>('/google-sheet-config', {
       method: 'POST', body: JSON.stringify({ googleSheetId }),

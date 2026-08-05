@@ -56,6 +56,11 @@ export type GoogleSheetConfig = {
   updatedAt: string
 }
 
+export type GoogleSheetNames = {
+  sourceGoogleSheetId: string
+  sheetNames: string[]
+}
+
 export type CopySourceSheetInput = {
   sourceGoogleSheetId: string
   sourceSheetName: string
@@ -67,6 +72,17 @@ export type CopySourceSheetResult = {
   success: true
   copiedRows: number
   copiedMergedRanges: number
+}
+
+export type CheckSourceSheetColumnsResult = {
+  success: boolean
+  message: string
+  mismatch?: {
+    cell: string
+    column: string
+    expectedTitle: string
+    actualTitle: string
+  }
 }
 
 export type AuthSession = {
