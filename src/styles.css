@@ -139,7 +139,7 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .excel-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .edited-dot { width: 10px; height: 10px; display: inline-block; border: 1px solid #efd293; border-radius: 2px; background: #fff4d6; }
 .excel-legend small { margin-left: auto; color: #98a29e; font-size: 9px; }
-.copy-form-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(340px, .85fr); gap: 32px; }
+.copy-form-layout { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(290px, .6fr); gap: 32px; }
 .copy-form-section + .copy-form-section { padding-left: 32px; border-left: 1px solid #e5eae7; }
 .copy-section-heading { margin-bottom: 20px; }
 .copy-section-heading strong, .copy-section-heading span { display: block; }
@@ -159,6 +159,41 @@ button, a, .ant-menu-item { touch-action: manipulation; }
 .service-account-info span { color: #52615b; font-size: 11px; }
 .service-account-info code { display: block; min-width: 0; overflow: hidden; color: #126d4c; font-family: "SFMono-Regular", Consolas, monospace; font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .copy-form-footer > .ant-btn { min-width: 210px; justify-self: end; }
+.source-config-fields { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 12px; align-items: start; }
+.source-config-fields > .ant-form-item { margin-bottom: 14px; }
+.source-url-control { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 8px; align-items: start; }
+.source-sheet-list { min-height: 390px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dfe6e2; border-radius: 9px; background: #fff; }
+.source-sheet-list-heading { min-height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px 8px 14px; border-bottom: 1px solid #e5eae7; background: #f7f9f8; }
+.source-sheet-list-heading > div { min-width: 0; display: flex; align-items: center; gap: 8px; }
+.source-sheet-list-heading strong { color: #34413b; font-size: 11px; }
+.source-sheet-list-heading span { padding: 2px 7px; border-radius: 10px; color: #66736d; background: #e8eeeb; font-size: 9px; }
+.source-sheet-list > .ant-skeleton, .source-sheet-list > .ant-empty { flex: 1; padding: 32px 14px; }
+.source-sheet-list .ant-empty-description { color: #84908b; font-size: 11px; }
+.source-sheet-toolbar { display: grid; grid-template-columns: minmax(150px, 1fr) auto auto; align-items: center; gap: 10px; padding: 9px 10px; border-bottom: 1px solid #e5eae7; background: #fff; }
+.source-sheet-toolbar > span { color: #7d8984; font-size: 10px; white-space: nowrap; }
+.source-sheet-toolbar .ant-segmented-item-label { min-height: 24px; padding-inline: 9px; font-size: 10px; line-height: 24px; }
+.source-sheet-filter-empty { flex: 1; margin-block: 0; padding: 42px 14px !important; }
+.source-sheet-table { max-height: 520px; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #a9b7b0 #edf1ef; scrollbar-width: thin; }
+.source-sheet-row { min-height: 42px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 6px 10px 6px 14px; border-bottom: 1px solid #edf1ef; }
+.source-sheet-row:last-child { border-bottom: 0; }
+.source-sheet-row.is-copied { position: relative; background: #edf8f3; box-shadow: inset 3px 0 0 #16845b; }
+.source-sheet-row.is-copied .source-sheet-name { color: #126d4c; }
+.source-sheet-header { position: sticky; top: 0; z-index: 2; min-height: 34px; color: #7d8984; background: #fbfcfb; box-shadow: 0 1px 0 #e5eae7; font-size: 10px; font-weight: 650; text-transform: uppercase; }
+.source-sheet-header span:last-child { padding-right: 42px; text-align: center; }
+.source-sheet-name { min-width: 0; overflow: hidden; color: #26322d; font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.source-sheet-actions { display: flex; gap: 6px; }
+.source-sheet-actions .ant-btn { min-width: 76px; font-weight: 600; }
+.source-sheet-actions .source-sheet-copy-btn { border-color: #16845b; color: #fff; background: #16845b; box-shadow: 0 2px 5px rgba(22, 132, 91, .18); }
+.source-sheet-actions .source-sheet-copy-btn:not(:disabled):hover { border-color: #116b49; color: #fff; background: #116b49; }
+.source-sheet-actions .source-sheet-copy-btn:not(:disabled):focus-visible { outline: 3px solid rgba(22, 132, 91, .2); outline-offset: 1px; }
+.source-sheet-actions .source-sheet-check-btn { border-color: #e8bd73; color: #965b05; background: #fff7e6; box-shadow: 0 2px 5px rgba(150, 91, 5, .1); }
+.source-sheet-actions .source-sheet-check-btn:not(:disabled):hover { border-color: #c87a0a; color: #7a4800; background: #ffedc4; }
+.source-sheet-actions .source-sheet-check-btn:not(:disabled):focus-visible { outline: 3px solid rgba(200, 122, 10, .18); outline-offset: 1px; }
+.source-sheet-actions .source-sheet-detail-btn { min-width: auto; padding-inline: 8px; font-size: 10px; }
+.source-check-detail { display: grid; gap: 16px; padding-top: 8px; }
+.source-check-detail .ant-alert-message { overflow-wrap: anywhere; font-size: 12px; }
+.source-check-detail .ant-descriptions-item-label { width: 148px; color: #68756f; font-size: 11px; }
+.source-check-detail .ant-descriptions-item-content { overflow-wrap: anywhere; color: #29332f; font-size: 12px; }
 
 @media (max-width: 1023px) {
   .login-page { grid-template-columns: 1fr; background: #f7f9f8; }
@@ -173,6 +208,7 @@ button, a, .ant-menu-item { touch-action: manipulation; }
   .source-columns-heading { align-items: flex-start; }
   .source-column-actions { margin-top: 4px; }
   .copy-form-layout { grid-template-columns: 1fr; gap: 26px; }
+  .source-sheet-list { min-height: 360px; }
   .copy-form-section + .copy-form-section { padding: 26px 0 0; border-top: 1px solid #e5eae7; border-left: 0; }
   .ant-drawer-body { position: relative; padding: 12px !important; }.ant-drawer-body .sidebar-footer { bottom: 4px; }
 }
@@ -208,6 +244,17 @@ button, a, .ant-menu-item { touch-action: manipulation; }
   .copy-info .ant-alert-content { min-width: 0; }
   .copy-info .ant-alert-action { margin-inline-start: 8px; }
   .copy-info .ant-alert-action .ant-btn span:not(.anticon) { display: none; }
+  .source-config-fields { grid-template-columns: 1fr; gap: 0; }
+  .source-url-control { width: 100%; grid-template-columns: minmax(0, 1fr) 84px; }
+  .source-sheet-list { min-height: 320px; }
+  .source-sheet-toolbar { grid-template-columns: 1fr auto; }
+  .source-sheet-toolbar .ant-segmented { grid-column: 1 / -1; grid-row: 2; }
+  .source-sheet-toolbar > span { grid-column: 2; grid-row: 1; }
+  .source-sheet-row { padding-left: 10px; }
+  .source-sheet-actions .ant-btn { min-width: 34px; padding-inline: 8px; }
+  .source-sheet-actions .ant-btn span:not(.anticon) { display: none; }
+  .source-sheet-actions .source-sheet-detail-btn span { display: inline; }
+  .source-check-detail .ant-descriptions-item-label { width: 118px; }
   .field-grid, .field-grid:has(> :nth-child(3)) { grid-template-columns: 1fr 1fr; }
   .field-grid:has(> :nth-child(3)) > :first-child { grid-column: 1 / -1; }
   .empty-result { min-height: 250px; }
