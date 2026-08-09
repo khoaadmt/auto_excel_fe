@@ -82,3 +82,18 @@ export type SourceColumnConfig = {
   defaultSourceColumns: Record<string, string>
   sourceColumns: Record<string, string>
 }
+
+export type ComparisonStatus = 'matched' | 'mismatched' | 'missing_in_pdf' | 'missing_in_excel'
+export type FieldComparison = { match: boolean; pdf: string | null; excel: string | null }
+export type RowComparison = {
+  rowNumber: number
+  status: ComparisonStatus
+  fields: { nameOfGood: FieldComparison; hsCode: FieldComparison; quantity: FieldComparison }
+  pdfQuantityUnit: string | null
+}
+export type DocumentComparisonResult = {
+  spreadsheetId: string
+  sheetName: string
+  summary: { pdfRows: number; excelRows: number; comparedRows: number; matchedRows: number; mismatchedRows: number; missingInPdf: number; missingInExcel: number; allMatched: boolean }
+  rows: RowComparison[]
+}

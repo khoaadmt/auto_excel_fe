@@ -1,6 +1,6 @@
 import type {
   AuthSession, CheckSheetErrorsResult, ColumnDefaults, CopySourceSheetInput, CopySourceSheetResult, GoogleSheetConfig,
-  SourceColumnConfig, UnitRule,
+  SourceColumnConfig, UnitRule, DocumentComparisonResult,
 } from './types'
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '')
@@ -35,6 +35,7 @@ const actionByPath = (path: string) => {
   if (path.startsWith('/sum-packages')) return 'tính tổng số kiện'
   if (path.startsWith('/source-columns')) return 'cập nhật cấu hình cột nguồn'
   if (path.startsWith('/unit-configs')) return 'cập nhật quy tắc đơn vị'
+  if (path.startsWith('/document-comparison')) return 'đối chiếu chứng từ'
   return 'xử lý yêu cầu'
 }
 
@@ -53,6 +54,9 @@ const responseError = (response: Response, path: string) => {
   if (response.status === 404) return new Error(`Chức năng ${action} hiện chưa khả dụng. Vui lòng liên hệ quản trị viên.`)
   if (response.status === 409) return new Error(`Dữ liệu đã thay đổi nên chưa thể ${action}. Vui lòng tải lại và thử lại.`)
   if (response.status === 429) return new Error('Bạn thao tác quá nhanh. Vui lòng chờ một chút rồi thử lại.')
+  if (response.status === 413) return new Error('File PDF vượt quá giới hạn 15 MB.')
+  if (response.status === 502) return new Error('Không thể đọc Google Sheet. Hãy kiểm tra link, tên tab và quyền Viewer.')
+  if (response.status === 503) return new Error('Google Sheets đang tạm thời không khả dụng. Vui lòng thử lại sau.')
   if (response.status >= 500) return new Error(`Máy chủ đang gặp sự cố khi ${action}. Vui lòng thử lại sau.`)
   return new Error(`Không thể ${action}. Vui lòng thử lại.`)
 }
@@ -104,7 +108,7 @@ const request = async <T>(
   const response = await fetchApi(path, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...(!(options?.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
       ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...options?.headers,
     },
@@ -173,6 +177,13 @@ export const api = {
     request<{ success: boolean; totalGroups: number; totalPackages: number; groups: import('./types').PackageGroup[] }>('/sum-packages', {
       method: 'POST', body: JSON.stringify(body),
     }),
+  compareDocument: (input: { pdf: File; spreadsheetUrl: string; sheetName?: string }) => {
+    const formData = new FormData()
+    formData.append('pdf', input.pdf)
+    formData.append('spreadsheetUrl', input.spreadsheetUrl.trim())
+    if (input.sheetName?.trim()) formData.append('sheetName', input.sheetName.trim())
+    return request<DocumentComparisonResult>('/document-comparison/compare', { method: 'POST', body: formData })
+  },
   rules: () => request<UnitRule[]>('/unit-configs'),
   createRule: (body: Omit<UnitRule, 'id'>) => request<UnitRule>('/unit-configs', { method: 'POST', body: JSON.stringify(body) }),
   updateRule: (id: UnitRule['id'], body: Partial<UnitRule>) => request<UnitRule>(`/unit-configs/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),

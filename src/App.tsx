@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
-  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, CopyOutlined, ExceptionOutlined, FileExcelOutlined,
+  AuditOutlined, BarsOutlined, BoxPlotOutlined, CloseOutlined, CopyOutlined, ExceptionOutlined, FileExcelOutlined, FileSearchOutlined,
   LogoutOutlined, MenuOutlined, SettingOutlined, SwapOutlined, TableOutlined,
 } from '@ant-design/icons'
 import { Button, ConfigProvider, Drawer, Layout, Menu, Tag, Typography, message } from 'antd'
@@ -13,13 +13,15 @@ import { GoogleSheetContext } from './components/GoogleSheetContext'
 import { CopySourceSheet } from './components/CopySourceSheet'
 import { Login } from './components/Login'
 import { SourceColumns } from './components/SourceColumns'
+import { DocumentComparison } from './components/DocumentComparison'
 import type { ColumnDefaults, ModelInvalidRow, PackageGroup, SheetCellError, UnitInvalidRow } from './types'
 
-type Page = 'copy' | 'sheet-errors' | 'units' | 'model' | 'packages' | 'source-columns' | 'rules'
+type Page = 'copy' | 'document-comparison' | 'sheet-errors' | 'units' | 'model' | 'packages' | 'source-columns' | 'rules'
 
 const menuItems: MenuProps['items'] = [
   { type: 'group', label: 'DATA OPERATIONS', children: [
     { key: 'copy', icon: <CopyOutlined />, label: 'COPY SOURCE SHEET' },
+    { key: 'document-comparison', icon: <FileSearchOutlined />, label: 'COMPARE PDF & SHEET' },
     { key: 'sheet-errors', icon: <ExceptionOutlined />, label: 'CHECK SHEET ERRORS' },
     { key: 'units', icon: <AuditOutlined />, label: 'CHECK UNITS' },
     { key: 'model', icon: <SwapOutlined />, label: 'CHECK MODEL & BRAND' },
@@ -85,7 +87,7 @@ export function App() {
 
   const nav = <Menu mode="inline" selectedKeys={[page]} items={menuItems} onClick={navigate} />
 
-  const content = page === 'copy' ? <CopySourceSheet /> : page === 'sheet-errors' ? (
+  const content = page === 'copy' ? <CopySourceSheet /> : page === 'document-comparison' ? <DocumentComparison /> : page === 'sheet-errors' ? (
     <ToolPage eyebrow="DATA VALIDATION" title="CHECK SHEET ERRORS"
       description="Quét toàn bộ ô đang sử dụng trong sheet để phát hiện lỗi công thức gốc của Google Sheets."
       fields={[]}
