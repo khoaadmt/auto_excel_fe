@@ -55,7 +55,7 @@ const responseError = (response: Response, path: string) => {
   if (response.status === 404) return new Error(`Chức năng ${action} hiện chưa khả dụng. Vui lòng liên hệ quản trị viên.`)
   if (response.status === 409) return new Error(`Dữ liệu đã thay đổi nên chưa thể ${action}. Vui lòng tải lại và thử lại.`)
   if (response.status === 429) return new Error('Bạn thao tác quá nhanh. Vui lòng chờ một chút rồi thử lại.')
-  if (response.status === 413) return new Error('File PDF vượt quá giới hạn 15 MB.')
+  if (response.status === 413) return new Error('File tải lên vượt quá giới hạn 15 MB.')
   if (response.status === 502) return new Error('Không thể đọc Google Sheet. Hãy kiểm tra link, tên tab và quyền Viewer.')
   if (response.status === 503) return new Error('Google Sheets đang tạm thời không khả dụng. Vui lòng thử lại sau.')
   if (response.status >= 500) return new Error(`Máy chủ đang gặp sự cố khi ${action}. Vui lòng thử lại sau.`)
@@ -184,11 +184,10 @@ export const api = {
     request<{ success: boolean; totalGroups: number; totalPackages: number; groups: import('./types').PackageGroup[] }>('/sum-packages', {
       method: 'POST', body: JSON.stringify(body),
     }),
-  compareDocument: (input: { pdf: File; spreadsheetUrl: string; sheetName?: string }) => {
+  compareDocument: (input: { pdf: File; excel: File }) => {
     const formData = new FormData()
     formData.append('pdf', input.pdf)
-    formData.append('spreadsheetUrl', input.spreadsheetUrl.trim())
-    if (input.sheetName?.trim()) formData.append('sheetName', input.sheetName.trim())
+    formData.append('excel', input.excel)
     return request<DocumentComparisonResult>('/document-comparison/compare', { method: 'POST', body: formData })
   },
   rules: () => request<UnitRule[]>('/unit-configs'),

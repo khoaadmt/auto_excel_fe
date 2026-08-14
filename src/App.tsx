@@ -21,7 +21,7 @@ type Page = 'copy' | 'document-comparison' | 'sheet-errors' | 'units' | 'model' 
 const menuItems: MenuProps['items'] = [
   { type: 'group', label: 'DATA OPERATIONS', children: [
     { key: 'copy', icon: <CopyOutlined />, label: 'COPY SOURCE SHEET' },
-    { key: 'document-comparison', icon: <FileSearchOutlined />, label: 'COMPARE PDF & SHEET' },
+    { key: 'document-comparison', icon: <FileSearchOutlined />, label: 'COMPARE PDF & EXCEL' },
     { key: 'sheet-errors', icon: <ExceptionOutlined />, label: 'CHECK SHEET ERRORS' },
     { key: 'units', icon: <AuditOutlined />, label: 'CHECK UNITS' },
     { key: 'model', icon: <SwapOutlined />, label: 'CHECK MODEL & BRAND' },

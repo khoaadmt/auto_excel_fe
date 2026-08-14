@@ -104,11 +104,11 @@ export type FieldComparison = { match: boolean; pdf: string | null; excel: strin
 export type RowComparison = {
   rowNumber: number
   status: ComparisonStatus
-  fields: { nameOfGood: FieldComparison; hsCode: FieldComparison; quantity: FieldComparison }
+  fields: { nameOfGood: FieldComparison; hsCode: FieldComparison; quantity: FieldComparison; quantityUnit?: FieldComparison }
   pdfQuantityUnit: string | null
 }
 export type DocumentComparisonResult = {
-  spreadsheetId: string
+  excelFileName: string
   sheetName: string
   summary: { pdfRows: number; excelRows: number; comparedRows: number; matchedRows: number; mismatchedRows: number; missingInPdf: number; missingInExcel: number; allMatched: boolean }
   rows: RowComparison[]
