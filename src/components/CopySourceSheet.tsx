@@ -216,11 +216,12 @@ export function CopySourceSheet() {
                             <span className="source-sheet-actions" role="cell">
                               <Button className="source-sheet-copy-btn" size="small" type="primary" icon={<CopyOutlined />}
                                 loading={activeAction === `copy:${sheetName}`}
-                                disabled={activeAction !== null && activeAction !== `copy:${sheetName}`}
+                                // A failed column check is informational only; it must not block copying.
+                                disabled={activeAction !== null}
                                 onClick={() => copySheet(sheetName)}>Copy</Button>
                               <Button className="source-sheet-check-btn" size="small" icon={<CheckCircleOutlined />}
                                 loading={activeAction === `check:${sheetName}`}
-                                disabled={activeAction !== null && activeAction !== `check:${sheetName}`}
+                                disabled={activeAction !== null}
                                 onClick={() => checkSheet(sheetName)}>Check</Button>
                               {checkErrors[sheetName] ? (
                                 <Button className="source-sheet-detail-btn" size="small" danger
