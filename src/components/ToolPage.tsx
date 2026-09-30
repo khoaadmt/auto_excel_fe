@@ -54,7 +54,7 @@ export function ToolPage<T>({ eyebrow, title, description, fields, run, result,
             <div><h2>Thiết lập dữ liệu</h2><p>{setupDescription}</p></div>
           </div>
           <Form form={form} layout="vertical" onFinish={submit} requiredMark={false}>
-            <Form.Item name="sheetName" label="Tên sheet" initialValue="data" rules={[{ required: true, message: 'Vui lòng nhập tên sheet' }]}>
+            <Form.Item name="sheetName" label="Tên sheet" initialValue="RONGXING" rules={[{ required: true, message: 'Vui lòng nhập tên sheet' }]}>
               <Input size="large" placeholder="Ví dụ: data" />
             </Form.Item>
             <div className="field-grid">

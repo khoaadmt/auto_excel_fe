@@ -1,5 +1,5 @@
 import type {
-  AuthSession, CheckSheetErrorsResult, CheckSourceSheetColumnsResult, ColumnDefaults, CopySourceSheetInput,
+  AuthSession, CheckSheetErrorsResult, CheckSourceSheetColumnsResult, CopySourceSheetInput,
   CopySourceSheetResult, GoogleSheetConfig, GoogleSheetNames,
   SourceColumnConfig, UnitRule, DocumentComparisonResult,
 } from './types'
@@ -167,7 +167,6 @@ export const api = {
     }),
   deleteGoogleSheetConfig: () =>
     request<void>('/google-sheet-config', { method: 'DELETE' }),
-  defaults: () => request<ColumnDefaults>('/unit-configs/column-defaults'),
   checkUnits: (body: Record<string, string>) =>
     request<{ success: boolean; checkedRows: number; invalidRows: import('./types').UnitInvalidRow[] }>('/check-units', {
       method: 'POST', body: JSON.stringify(body),

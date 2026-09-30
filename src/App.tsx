@@ -70,10 +70,20 @@ export function App() {
 
   useEffect(() => { document.querySelector<HTMLElement>('#main-content')?.focus() }, [page])
   useEffect(() => {
-    if (authenticated) api.defaults().then(setDefaults).catch((error) => {
-      message.error(error instanceof Error ? error.message : 'Không thể tải cấu hình cột mặc định. Vui lòng thử lại.')
+    if (!authenticated || !(['units', 'model', 'packages'] as Page[]).includes(page)) return
+    let active = true
+    api.sourceColumns().then(({ sourceColumns }) => {
+      if (!active) return
+      setDefaults({
+        checkUnits: sourceColumns,
+        checkModelBrand: sourceColumns,
+        sumPackages: sourceColumns,
+      })
+    }).catch((error) => {
+      if (active) message.error(error instanceof Error ? error.message : 'Không thể tải cấu hình cột nguồn. Vui lòng thử lại.')
     })
-  }, [authenticated])
+    return () => { active = false }
+  }, [authenticated, page])
   useEffect(() => {
     const sessionExpired = () => setAuthenticated(false)
     window.addEventListener('excelflow:auth-expired', sessionExpired)
